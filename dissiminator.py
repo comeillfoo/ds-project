@@ -1,44 +1,60 @@
 #!/usr/bin/env python3
 import sys
-import argparse
+import click
 
-from node import NodesPool
-
-
-DISSIMINATION_ALGORITHMS = [
-    'single',
-    'multi',
-    'broad',
-    'gossip'
-]
+from nodes import NodesPool
 
 
-def argparser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser('dissiminator')
+DEFAULT_NUMBER_NODES = 3
+DEFAULT_ROUNDS_LIMIT = 100
 
-    # Options
-    default_algorithm = DISSIMINATION_ALGORITHMS[0]
-    p.add_argument('-a', '--algorithm', choices=DISSIMINATION_ALGORITHMS,
-                   default=default_algorithm,
-                   help=f'cast algorithm to use, default {default_algorithm}')
+@click.group()
+@click.option('-n', '--nodes', type=int, default=DEFAULT_NUMBER_NODES,
+              show_default=True, help='Number of nodes')
+@click.option('-l', '--limit', type=int, default=DEFAULT_ROUNDS_LIMIT,
+              show_default=True, help='Maximum rounds of simulation')
+@click.pass_context
+def main(ctx, nodes: int, limit: int):
 
-    default_nodes = 3
-    p.add_argument('-n', '--nodes', type=int, default=default_nodes,
-                   help=f'number of nodes, default {default_nodes}')
-
-    # Arguments
-    # TODO:
-
-    return p
+    ctx.ensure_object(dict)
+    ctx.obj['nodes'] = nodes
+    ctx.obj['limit'] = limit
 
 
-def main() -> int:
-    args = argparser().parse_args()
+def run(nodes: int, limit: int):
+    rounds = 0
+    with NodesPool(nodes) as pool:
+        while rounds < limit and not pool.exchange():
+            print(f'[{rounds}] starting...')
+            rounds += 1
 
-    with NodesPool(args.nodes) as pool:
-        pool.start()
-    return 0
+
+@main.command()
+@click.pass_context
+def singlecast(ctx):
+    pass
+
+
+@main.command()
+@click.pass_context
+def multicast(ctx):
+    pass
+
+
+@main.command()
+@click.pass_context
+def broadcast(ctx):
+    pass
+
+
+@main.command()
+@click.option('--push', is_flag=True, default=True, help='Enable push mode')
+@click.option('--pull', is_flag=True, help='Enable pull mode')
+@click.pass_context
+def gossip(ctx, push: bool, pull: bool):
+    pass
+
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    main(obj={})
