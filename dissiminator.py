@@ -32,14 +32,19 @@ def main(ctx, nodes: int, limit: int):
 
 
 def run(limit: int, proto: DisseminationProtocol):
-    rounds = 0
-    with proto.nodes_pool:
-        while rounds < limit and not proto.exchange():
-            disseminated_nodes = len(proto.nodes_pool.disseminated_nodes())
-            print(f'[{rounds}] finished {disseminated_nodes}')
+    rounds = 1
+    with proto.pool:
+        while rounds <= limit and not proto.exchange():
+            print(f'[{rounds}] finished', proto.pool.count_disseminated_nodes(),
+                  proto.pool.count_disseminated_nodes(False))
             rounds += 1
 
-        print(f'[{rounds}] dissemination finished')
+        if not proto.pool.is_pool_disseminated():
+            print(f'[{rounds}] failed to disseminate pool, left',
+                  proto.pool.count_disseminated_nodes(False))
+            return
+
+        print(f'[{rounds}] pool successfully disseminated')
 
 
 @main.command()
@@ -63,7 +68,7 @@ def multicast(ctx, group: int):
 @click.pass_context
 def broadcast(ctx):
     run(ctx.obj['limit'], Multicast(NodesPool(ctx.obj['nodes']),
-                                    ctx.obj['nodes']))
+                                    ctx.obj['nodes'] - 1))
 
 
 @main.command()

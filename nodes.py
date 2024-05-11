@@ -68,6 +68,9 @@ class NodesPool:
                map(lambda node: node.is_disseminated, self.nodes), True)
 
 
-    def disseminated_nodes(self) -> set[Node]:
-        return set(filter(lambda node: node.is_disseminated, self.nodes))
+    def disseminated_nodes(self, target: bool = True) -> set[Node]:
+        return set(filter(lambda node: node.is_disseminated == target, self.nodes))
+
+    def count_disseminated_nodes(self, target: bool = True) -> int:
+        return len(self.disseminated_nodes(target))
 
