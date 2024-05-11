@@ -10,7 +10,7 @@ RC_SKIP=4
 NS=ns-$$
 
 # @brief random packet loss percentage
-loss_random="$1"
+loss_random=''
 
 cleanup() {
     echo "## Deleting network namespace $NS..."
@@ -23,6 +23,35 @@ require_command() {
     fi
     return 0
 }
+
+usage() {
+cat <<EOF
+${0##*/} [options] [arguments]
+
+Options:
+    -h, --help Show this help message and exits
+    --loss     Set random packet loss in percentages
+
+Arguments:
+    extra arguments for disseminator.py
+EOF
+}
+
+while true; do
+    case $1 in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        --loss)
+            loss_random=$2
+            shift 2
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
 
 set -euo pipefail
 
@@ -56,6 +85,18 @@ if ! ip netns exec $NS ip link set dev lo up; then
     exit $RC_NOT_OK
 fi
 echo '## Set up lo'
+
+echo '## Sourcing local environment...'
+if ! source .venv/bin/activate; then
+    echo '# not ok: failed to source environment'
+    exit $RC_NOT_OK
+fi
+
+echo "## Starting test (args: $@)..."
+if ! ip netns exec $NS python3 ./disseminator.py $@; then
+    echo '# not ok: test failed'
+    exit $RC_NOT_OK
+fi
 
 cleanup
 echo '# ok: test finished successfully'
