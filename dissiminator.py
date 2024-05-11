@@ -3,10 +3,13 @@ import sys
 import click
 
 from nodes import NodesPool
+from protos import DisseminationProtocol, Multicast, Gossip
 
 
 DEFAULT_NUMBER_NODES = 3
 DEFAULT_ROUNDS_LIMIT = 100
+DEFAULT_GROUP_SIZE = 2
+
 
 @click.group()
 @click.option('-n', '--nodes', type=int, default=DEFAULT_NUMBER_NODES,
@@ -15,44 +18,65 @@ DEFAULT_ROUNDS_LIMIT = 100
               show_default=True, help='Maximum rounds of simulation')
 @click.pass_context
 def main(ctx, nodes: int, limit: int):
+    if nodes <= 0:
+        raise click.BadOptionUsage('nodes',
+                                   'Nodes number should be positive', ctx)
+
+    if limit <= 0:
+        raise click.BadOptionUsage('limit',
+                                'Maximum rounds number should be positive', ctx)
 
     ctx.ensure_object(dict)
     ctx.obj['nodes'] = nodes
     ctx.obj['limit'] = limit
 
 
-def run(nodes: int, limit: int):
+def run(limit: int, proto: DisseminationProtocol):
     rounds = 0
-    with NodesPool(nodes) as pool:
-        while rounds < limit and not pool.exchange():
-            print(f'[{rounds}] starting...')
+    with proto.nodes_pool:
+        while rounds < limit and not proto.exchange():
+            disseminated_nodes = len(proto.nodes_pool.disseminated_nodes())
+            print(f'[{rounds}] finished {disseminated_nodes}')
             rounds += 1
+
+        print(f'[{rounds}] dissemination finished')
 
 
 @main.command()
 @click.pass_context
 def singlecast(ctx):
-    pass
+    run(ctx.obj['limit'], Multicast(NodesPool(ctx.obj['nodes']), 1))
 
 
 @main.command()
+@click.argument('group', type=int, default=DEFAULT_GROUP_SIZE)
 @click.pass_context
-def multicast(ctx):
-    pass
+def multicast(ctx, group: int):
+    if not (group > 1 and group < ctx.obj['nodes']):
+        raise click.BadArgumentUsage(
+            'Multicast group size should be between 1 and nodes number', ctx)
+
+    run(ctx.obj['limit'], Multicast(NodesPool(ctx.obj['nodes']), group))
 
 
 @main.command()
 @click.pass_context
 def broadcast(ctx):
-    pass
+    run(ctx.obj['limit'], Multicast(NodesPool(ctx.obj['nodes']),
+                                    ctx.obj['nodes']))
 
 
 @main.command()
-@click.option('--push', is_flag=True, default=True, help='Enable push mode')
-@click.option('--pull', is_flag=True, help='Enable pull mode')
+@click.option('-m', '--mode', type=click.Choice(['push', 'pull', 'push-pull']),
+              default='push', help='Gossip protocol mode', show_default=True)
+@click.argument('group', type=int, default=DEFAULT_GROUP_SIZE)
 @click.pass_context
-def gossip(ctx, push: bool, pull: bool):
-    pass
+def gossip(ctx, mode: str, group: int):
+    if group <= 0 or group >= ctx.obj['nodes']:
+        raise click.BadArgumentUsage(
+            'Number of random nodes for gossip should be between 1 and nodes number', ctx)
+
+    run(ctx.obj['limit'], Gossip(NodesPool(ctx.obj['nodes']), mode, group))
 
 
 
