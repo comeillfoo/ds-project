@@ -8,7 +8,7 @@ import logging
 from nodes import NodesPool, Node, MessageType
 
 
-LOG_PROTO_LEVEL=16
+LOG_PROTO_LEVEL=18
 logging.addLevelName(LOG_PROTO_LEVEL, 'PROTO')
 
 def log_proto(msg, *args, **kwargs):

@@ -2,22 +2,32 @@
 import click
 import logging
 
-from nodes import NodesPool
-from protos import DisseminationProtocol, Multicast, Gossip
+from nodes import NodesPool, LOG_NODE_LEVEL
+from protos import DisseminationProtocol, Multicast, Gossip, LOG_PROTO_LEVEL
 
 
 DEFAULT_NUMBER_NODES = 3
 DEFAULT_ROUNDS_LIMIT = 100
 DEFAULT_GROUP_SIZE = 2
 
+def count_logging_level(verbosity: int) -> int:
+    return {
+        0: logging.INFO,
+        1: LOG_PROTO_LEVEL,
+        2: LOG_NODE_LEVEL,
+    }.get(verbosity, logging.DEBUG)
 
 @click.group()
 @click.option('-n', '--nodes', type=int, default=DEFAULT_NUMBER_NODES,
               show_default=True, help='Number of nodes')
 @click.option('-l', '--limit', type=int, default=DEFAULT_ROUNDS_LIMIT,
               show_default=True, help='Maximum rounds of simulation')
+@click.option('-v', '--verbose', count=True, default=0,
+              help='Set verbosity level, default INFO')
 @click.pass_context
-def main(ctx, nodes: int, limit: int):
+def main(ctx, nodes: int, limit: int, verbose: int):
+    logging.basicConfig(level=count_logging_level(verbose))
+
     if nodes <= 0:
         raise click.BadOptionUsage('nodes', 'Nodes number should be positive',
                                    ctx)

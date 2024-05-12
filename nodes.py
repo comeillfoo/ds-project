@@ -11,7 +11,7 @@ from enum import IntEnum, auto
 import pickle
 
 
-LOG_NODE_LEVEL=12
+LOG_NODE_LEVEL=16
 logging.addLevelName(LOG_NODE_LEVEL, 'NODE')
 
 def log_node(msg, *args, **kwargs):
