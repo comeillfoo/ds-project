@@ -70,7 +70,7 @@ trap cleanup 1 2 3 6
 
 if [ -n "${loss_random}" ]; then
     echo "## Setting random loss to ${loss_random}..."
-    if ! ip netns exec $NS tc qdisc add dev lo root netem loss random "${loss_random}"; then
+    if ! ip netns exec $NS tc qdisc add dev lo root netem loss random "${loss_random}%"; then
         cleanup
         echo "# not ok: failed to set random loss to ${loss_random}"
         exit $RC_NOT_OK

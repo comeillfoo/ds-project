@@ -7,7 +7,7 @@ from protos import DisseminationProtocol, Multicast, Gossip, LOG_PROTO_LEVEL
 
 
 DEFAULT_NUMBER_NODES = 3
-DEFAULT_ROUNDS_LIMIT = 100
+DEFAULT_ROUNDS_LIMIT = 500
 DEFAULT_GROUP_SIZE = 2
 
 def count_logging_level(verbosity: int) -> int:
