@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-from typing import Iterable, Optional
+from typing import Iterable
 
+import logging
 import errno
 import threading
 import socket
@@ -10,9 +11,23 @@ from enum import IntEnum, auto
 import pickle
 
 
+LOG_NODE_LEVEL=12
+logging.addLevelName(LOG_NODE_LEVEL, 'NODE')
+
+def log_node(msg, *args, **kwargs):
+    logging.log(LOG_NODE_LEVEL, msg, *args, **kwargs)
+
+
 class MessageType(IntEnum):
     PUSH = 0
     PULL = auto()
+
+    def __str__(self) -> str:
+        if self is MessageType.PUSH:
+            return 'PUSH'
+        if self is MessageType.PULL:
+            return 'PULL'
+        return 'MessageType[Unknown]'
 
 
 class Node:
@@ -35,7 +50,7 @@ class Node:
         def _xmit():
             for neigh in neighbours:
                 self.sock.sendto(pickle.dumps(msg), neigh.sock.getsockname())
-                # print(f'xmit {self.port} -> {neigh.port}')
+                log_node('xmit [%i] -> (%i)', self.port, neigh.port)
 
         t = threading.Thread(target=_xmit)
         t.start()
@@ -47,15 +62,26 @@ class Node:
             try:
                 data, addr = self.sock.recvfrom(self.BUFFER_SIZE)
                 msg = pickle.loads(data)
+
+                log_node('recv [%i] <- (%i): %s', self.port, addr[1],
+                              str(msg))
+
                 if self.is_disseminated and msg == MessageType.PULL:
+                    log_node('xmit [%i] -> (%i): ACK[%s]', self.port,
+                                  addr[1], str(MessageType.PUSH))
                     self.sock.sendto(pickle.dumps(MessageType.PUSH), addr)
+
                 if msg == MessageType.PUSH:
+                    log_node('recv [%i]: is disseminated', self.port)
                     self.is_disseminated = True
             except socket.error as e:
                 if e.errno == errno.EAGAIN or e.errno == errno.EWOULDBLOCK:
                     return
-                print('Fatal error on', self.port, e)
-                return
+                logging.critical('recv [%i]: socker error', self.port,
+                                 exc_info=e)
+            except Exception as e:
+                logging.critical('recv [%i]: unforeseen error', self.port,
+                                 exc_info=e)
 
         t = threading.Thread(target=_recv)
         t.start()
@@ -64,9 +90,7 @@ class Node:
 
 class NodesPool:
     def __init__(self, nodes_n: int):
-        nodes_kind = socket.SOCK_DGRAM # if is_gossip else socket.SOCK_STREAM
-
-        self.nodes = [ Node(self, '127.0.0.1', nodes_kind) for _ in range(nodes_n) ]
+        self.nodes = [ Node(self, '127.0.0.1', socket.SOCK_DGRAM) for _ in range(nodes_n) ]
 
 
     def __enter__(self):
@@ -75,7 +99,8 @@ class NodesPool:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         for node in self.nodes:
-            # print('closing', node.sock.getsockname(), '...')
+            ip, port = node.sock.getsockname()
+            logging.debug('closing socket %s/%i at pool...', ip, port)
             node.sock.close()
 
 
@@ -89,4 +114,9 @@ class NodesPool:
 
     def count_disseminated_nodes(self, target: bool = True) -> int:
         return len(self.disseminated_nodes(target))
+
+    def i_disseminated_nodes(self, target: bool = True) -> set[int]:
+        return set(map(lambda inode: inode[0],
+                       filter(lambda inode: inode[1].is_disseminated == target,
+                              enumerate(self.nodes))))
 

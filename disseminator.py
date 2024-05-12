@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import sys
 import click
+import logging
 
 from nodes import NodesPool
 from protos import DisseminationProtocol, Multicast, Gossip
@@ -19,12 +19,12 @@ DEFAULT_GROUP_SIZE = 2
 @click.pass_context
 def main(ctx, nodes: int, limit: int):
     if nodes <= 0:
-        raise click.BadOptionUsage('nodes',
-                                   'Nodes number should be positive', ctx)
+        raise click.BadOptionUsage('nodes', 'Nodes number should be positive',
+                                   ctx)
 
     if limit <= 0:
-        raise click.BadOptionUsage('limit',
-                                'Maximum rounds number should be positive', ctx)
+        raise click.BadOptionUsage('limit', 'Maximum rounds number should be '
+                                   'positive', ctx)
 
     ctx.ensure_object(dict)
     ctx.obj['nodes'] = nodes
@@ -33,25 +33,36 @@ def main(ctx, nodes: int, limit: int):
 
 def run(limit: int, proto: DisseminationProtocol):
     rounds = 1
-    nodes = len(proto.pool.nodes)
+    overall_nodes = len(proto.pool.nodes)
     with proto.pool:
         try:
             while rounds <= limit:
                 should_stop = proto.exchange()
-                disseminated = proto.pool.count_disseminated_nodes()
-                not_disseminated = proto.pool.count_disseminated_nodes(False)
-                print(f'[{rounds}] finished {disseminated}/{not_disseminated}/{nodes}')
+                notified = proto.pool.count_disseminated_nodes()
+                not_notified = proto.pool.count_disseminated_nodes(False)
+
+                logging.info('round [%i/%i]: %i/%i/%i; (total/notified/not notified)',
+                             rounds, limit, overall_nodes, notified, not_notified)
+
                 if should_stop: break
                 rounds += 1
 
             if not proto.pool.is_pool_disseminated():
-                print(f'failed to disseminate pool of {nodes} nodes, left',
-                    proto.pool.count_disseminated_nodes(False))
+                notified = proto.pool.count_disseminated_nodes()
+                not_notified = proto.pool.count_disseminated_nodes(False)
+                logging.info('FAILED to disseminate pool: [%i/%i/%i], (%i/%i)',
+                            overall_nodes, notified, not_notified, rounds, limit)
                 return
 
-            print(f'pool successfully disseminated in {rounds} rounds')
+            logging.info('SUCCEED in dissemination: (%i/%i) rounds',
+                            rounds, limit)
         except Exception as e:
-            print('Not foreseen exception occured', e)
+            logging.critical('Unforeseen exception occured', exc_info=e)
+
+
+def check_group_value(ctx, group: int, msg: str):
+    if group <= 0 or group >= ctx.obj['nodes']:
+        raise click.BadArgumentUsage(msg, ctx)
 
 
 @main.command()
@@ -64,10 +75,8 @@ def singlecast(ctx):
 @click.argument('group', type=int, default=DEFAULT_GROUP_SIZE)
 @click.pass_context
 def multicast(ctx, group: int):
-    if not (group > 1 and group < ctx.obj['nodes']):
-        raise click.BadArgumentUsage(
-            'Multicast group size should be between 1 and nodes number', ctx)
-
+    check_group_value(ctx, group, 'Multicast group size should be between 1 and'
+                      ' nodes number')
     run(ctx.obj['limit'], Multicast(NodesPool(ctx.obj['nodes']), group))
 
 
@@ -78,18 +87,43 @@ def broadcast(ctx):
                                     ctx.obj['nodes'] - 1))
 
 
-@main.command()
-@click.option('-m', '--mode', type=click.Choice(['push', 'pull', 'push-pull']),
-              default='push', help='Gossip protocol mode', show_default=True)
+@main.group()
+def gossip():
+    pass
+
+
+GOSSIP_ERROR_MSG = 'Number of random nodes for gossip should be between 1 and ' \
+                   'nodes number'
+
+
+@gossip.command()
 @click.argument('group', type=int, default=DEFAULT_GROUP_SIZE)
 @click.pass_context
-def gossip(ctx, mode: str, group: int):
-    if group <= 0 or group >= ctx.obj['nodes']:
-        raise click.BadArgumentUsage(
-            'Number of random nodes for gossip should be between 1 and nodes number', ctx)
+def push(ctx, group: int):
+    check_group_value(ctx, group, GOSSIP_ERROR_MSG)
 
-    run(ctx.obj['limit'], Gossip(NodesPool(ctx.obj['nodes']), mode, group))
+    run(ctx.obj['limit'], Gossip(NodesPool(ctx.obj['nodes']), 'push', group, 0))
 
+
+@gossip.command()
+@click.argument('group', type=int, default=DEFAULT_GROUP_SIZE)
+@click.pass_context
+def pull(ctx, group: int):
+    check_group_value(ctx, group, GOSSIP_ERROR_MSG)
+
+    run(ctx.obj['limit'], Gossip(NodesPool(ctx.obj['nodes']), 'pull', 0, group))
+
+
+@gossip.command()
+@click.argument('push_group', type=int, default=DEFAULT_GROUP_SIZE)
+@click.argument('pull_group', type=int, default=DEFAULT_GROUP_SIZE)
+@click.pass_context
+def push_pull(ctx, push_group: int, pull_group: int):
+    check_group_value(ctx, push_group, GOSSIP_ERROR_MSG)
+    check_group_value(ctx, pull_group, GOSSIP_ERROR_MSG)
+
+    run(ctx.obj['limit'], Gossip(NodesPool(ctx.obj['nodes']), 'push-pull',
+                                 push_group, pull_group))
 
 
 if __name__ == '__main__':

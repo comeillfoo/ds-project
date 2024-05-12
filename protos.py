@@ -2,9 +2,17 @@
 from abc import ABC, abstractmethod
 from enum import IntEnum, auto
 import random
+import logging
 
 
 from nodes import NodesPool, Node, MessageType
+
+
+LOG_PROTO_LEVEL=16
+logging.addLevelName(LOG_PROTO_LEVEL, 'PROTO')
+
+def log_proto(msg, *args, **kwargs):
+    logging.log(LOG_PROTO_LEVEL, msg, *args, **kwargs)
 
 
 class CastModes(IntEnum):
@@ -21,7 +29,7 @@ class CastModes(IntEnum):
         }.get(string, cls.SINGLE)
 
 
-class DisseminationProtocol:
+class DisseminationProtocol(ABC):
     def __init__(self, nodes_pool: NodesPool):
         self.pool = nodes_pool
 
@@ -63,12 +71,8 @@ class Multicast(DisseminationProtocol):
         while len(self.send_idx_queue) > 0:
             sender_i: int = self.send_idx_queue.pop()
             receivers_i: set[int] = self.pick_next_nodes_group(sender_i)
-            # non_disseminated = set(map(lambda inode: inode[0],
-            #                            filter(lambda inode: not inode[1].is_disseminated,
-            #                                   map(lambda idx: (idx, self.pool.nodes[idx]), receivers_i))))
-            # print(f'Picked sender [{sender_i}], {len(receivers_i)} receivers'
-            #       f' and {len(non_disseminated)} receivers are not disseminated yet:',
-            #       non_disseminated)
+            log_proto('picked sender/count receivers [%i/%i]', sender_i,
+                      len(receivers_i))
 
             receivers = set(map(self._inode, receivers_i))
 
@@ -79,14 +83,13 @@ class Multicast(DisseminationProtocol):
                 receiver_t.join()
             sender_t.join()
 
-        self.send_idx_queue = set(map(lambda inode: inode[0],
-                                      filter(lambda inode: inode[1].is_disseminated,
-                                             enumerate(self.pool.nodes))))
+        self.send_idx_queue = self.pool.i_disseminated_nodes()
         return super().exchange()
 
 
 class Gossip(DisseminationProtocol):
-    def __init__(self, nodes_pool: NodesPool, mode: str, group_size: int):
+    def __init__(self, nodes_pool: NodesPool, mode: str,
+                 push_group: int, pull_group: int):
         super().__init__(nodes_pool)
         self._exchange_cb = {
             'push': self._push_exchange,
@@ -94,7 +97,8 @@ class Gossip(DisseminationProtocol):
             'push-pull': self._push_pull_exchange
         }.get(mode, self._push_exchange)
 
-        self.group_size = group_size
+        self.push_group = push_group
+        self.pull_group = pull_group
 
         start_node = self._pick_node()
         start_node.is_disseminated = True
@@ -103,21 +107,26 @@ class Gossip(DisseminationProtocol):
 
 
     def _push_exchange(self):
+        log_proto('starting push exchange...')
         while len(self.push_queue) > 0:
             pusher: Node = self.push_queue.pop()
-            # print('Picked pusher:', pusher.port, pusher.is_disseminated)
-            receivers: set[Node] = self._pick_nodes_group(pusher)
-            # print('Picked receivers:',
-            #       ', '.join(map(lambda receiver: str(receiver.port), receivers)))
+            log_proto('picked pusher [%i]', pusher.port)
+
+            receivers: set[Node] = self._pick_nodes_group(pusher,
+                                                          self.push_group)
+            log_proto('picked receivers: [%s]',
+                      ', '.join(map(lambda receiver: str(receiver.port),
+                                    receivers)))
 
             pusher_t = pusher.xmit(MessageType.PUSH, receivers)
+            log_proto('triggerred pushing')
+
             receivers_t = [ receiver.recv() for receiver in receivers ]
+            log_proto('triggerred receiving pushes')
+
             for receiver_t in receivers_t:
                 receiver_t.join()
             pusher_t.join()
-
-            # print('Updated potential pushers:',
-            #       ', '.join(map(lambda pusher: str(pusher.port), potential_pushers)))
 
         # TODO: maybe restrict disseminated nodes from previous rounds from
         # sending again
@@ -125,13 +134,25 @@ class Gossip(DisseminationProtocol):
 
 
     def _pull_exchange(self):
+        log_proto('starting pull exchange...')
         while len(self.pull_queue) > 0:
             puller: Node = self.pull_queue.pop()
+            log_proto('picked puller [%i]', puller.port)
 
-            receivers: set[Node] = self._pick_nodes_group(puller)
+            receivers: set[Node] = self._pick_nodes_group(puller,
+                                                          self.pull_group)
+            log_proto('picked receivers: [%s]',
+                      ', '.join(map(lambda receiver: str(receiver.port),
+                                    receivers)))
+
             puller_request_t = puller.xmit(MessageType.PULL, receivers)
+            log_proto('triggerred pull request')
+
             receivers_t = [ receiver.recv() for receiver in receivers ]
+            log_proto('triggerred responding on pull request')
+
             pullers_t = [ puller.recv() for _ in range(len(receivers)) ]
+            log_proto('triggerred receiving pull responses')
 
             for receiver_t in receivers_t:
                 receiver_t.join()
@@ -161,9 +182,9 @@ class Gossip(DisseminationProtocol):
         return node
 
 
-    def _pick_nodes_group(self, self_node: Node) -> list[Node]:
+    def _pick_nodes_group(self, self_node: Node, group_size: int) -> list[Node]:
         ans = set()
-        while len(ans) < self.group_size:
+        while len(ans) < group_size:
             node = self._pick_random_node()
             if node == self_node:
                 continue
