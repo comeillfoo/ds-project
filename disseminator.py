@@ -33,18 +33,25 @@ def main(ctx, nodes: int, limit: int):
 
 def run(limit: int, proto: DisseminationProtocol):
     rounds = 1
+    nodes = len(proto.pool.nodes)
     with proto.pool:
-        while rounds <= limit and not proto.exchange():
-            print(f'[{rounds}] finished', proto.pool.count_disseminated_nodes(),
-                  proto.pool.count_disseminated_nodes(False))
-            rounds += 1
+        try:
+            while rounds <= limit:
+                should_stop = proto.exchange()
+                disseminated = proto.pool.count_disseminated_nodes()
+                not_disseminated = proto.pool.count_disseminated_nodes(False)
+                print(f'[{rounds}] finished {disseminated}/{not_disseminated}/{nodes}')
+                if should_stop: break
+                rounds += 1
 
-        if not proto.pool.is_pool_disseminated():
-            print(f'[{rounds}] failed to disseminate pool, left',
-                  proto.pool.count_disseminated_nodes(False))
-            return
+            if not proto.pool.is_pool_disseminated():
+                print(f'failed to disseminate pool of {nodes} nodes, left',
+                    proto.pool.count_disseminated_nodes(False))
+                return
 
-        print(f'[{rounds}] pool successfully disseminated')
+            print(f'pool successfully disseminated in {rounds} rounds')
+        except Exception as e:
+            print('Not foreseen exception occured', e)
 
 
 @main.command()

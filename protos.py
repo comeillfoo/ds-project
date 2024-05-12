@@ -4,7 +4,7 @@ from enum import IntEnum, auto
 import random
 
 
-from nodes import NodesPool, Node
+from nodes import NodesPool, Node, MessageType
 
 
 class CastModes(IntEnum):
@@ -60,31 +60,28 @@ class Multicast(DisseminationProtocol):
 
 
     def exchange(self) -> bool:
-        potential_senders = set()
         while len(self.send_idx_queue) > 0:
             sender_i: int = self.send_idx_queue.pop()
             receivers_i: set[int] = self.pick_next_nodes_group(sender_i)
-            non_disseminated = set(map(lambda inode: inode[0],
-                                       filter(lambda inode: not inode[1].is_disseminated,
-                                              map(lambda idx: (idx, self.pool.nodes[idx]), receivers_i))))
+            # non_disseminated = set(map(lambda inode: inode[0],
+            #                            filter(lambda inode: not inode[1].is_disseminated,
+            #                                   map(lambda idx: (idx, self.pool.nodes[idx]), receivers_i))))
             # print(f'Picked sender [{sender_i}], {len(receivers_i)} receivers'
             #       f' and {len(non_disseminated)} receivers are not disseminated yet:',
             #       non_disseminated)
 
             receivers = set(map(self._inode, receivers_i))
 
-            sender_t = self._inode(sender_i).start_exchange(True, receivers)
-            receivers_t = [ receiver.start_exchange(False, []) for receiver in receivers ]
+            sender_t = self._inode(sender_i).xmit(MessageType.PUSH, receivers)
+            receivers_t = [ receiver.recv() for receiver in receivers ]
 
             for receiver_t in receivers_t:
                 receiver_t.join()
             sender_t.join()
 
-            potential_senders.update(map(lambda inode: inode[0],
-                                         filter(lambda inode: inode[1].is_disseminated,
-                                                enumerate(self.pool.nodes))))
-
-        self.send_idx_queue = potential_senders
+        self.send_idx_queue = set(map(lambda inode: inode[0],
+                                      filter(lambda inode: inode[1].is_disseminated,
+                                             enumerate(self.pool.nodes))))
         return super().exchange()
 
 
@@ -101,40 +98,55 @@ class Gossip(DisseminationProtocol):
 
         start_node = self._pick_node()
         start_node.is_disseminated = True
-        self.send_queue = { start_node }
+        self.push_queue = { start_node }
+        self.pull_queue = self.pool.disseminated_nodes(False)
 
 
     def _push_exchange(self):
-        potential_senders = set()
-        while len(self.send_queue) > 0:
-            sender: Node = self.send_queue.pop()
-            # print('Picked sender:', sender.port, sender.is_disseminated)
-            receivers: set[Node] = self._pick_nodes_group(sender)
+        while len(self.push_queue) > 0:
+            pusher: Node = self.push_queue.pop()
+            # print('Picked pusher:', pusher.port, pusher.is_disseminated)
+            receivers: set[Node] = self._pick_nodes_group(pusher)
             # print('Picked receivers:',
             #       ', '.join(map(lambda receiver: str(receiver.port), receivers)))
 
-            sender_t = sender.start_exchange(True, receivers)
-            receivers_t = [ receiver.start_exchange(False, []) for receiver in receivers ]
+            pusher_t = pusher.xmit(MessageType.PUSH, receivers)
+            receivers_t = [ receiver.recv() for receiver in receivers ]
             for receiver_t in receivers_t:
                 receiver_t.join()
-            sender_t.join()
-            # TODO: maybe restrict disseminated nodes from previous rounds from
-            # sending again
-            potential_senders.update(filter(lambda sender: sender.is_disseminated,
-                                    self.pool.nodes))
+            pusher_t.join()
 
-            # print('Updated potential senders:',
-            #       ', '.join(map(lambda sender: str(sender.port), potential_senders)))
+            # print('Updated potential pushers:',
+            #       ', '.join(map(lambda pusher: str(pusher.port), potential_pushers)))
 
-        self.send_queue = potential_senders
+        # TODO: maybe restrict disseminated nodes from previous rounds from
+        # sending again
+        self.push_queue = self.pool.disseminated_nodes()
 
 
     def _pull_exchange(self):
-        raise NotImplementedError
+        while len(self.pull_queue) > 0:
+            puller: Node = self.pull_queue.pop()
+
+            receivers: set[Node] = self._pick_nodes_group(puller)
+            puller_request_t = puller.xmit(MessageType.PULL, receivers)
+            receivers_t = [ receiver.recv() for receiver in receivers ]
+            pullers_t = [ puller.recv() for _ in range(len(receivers)) ]
+
+            for receiver_t in receivers_t:
+                receiver_t.join()
+
+            for puller_t in pullers_t:
+                puller_t.join()
+
+            puller_request_t.join()
+
+        self.pull_queue = self.pool.disseminated_nodes(False)
 
 
     def _push_pull_exchange(self):
-        raise NotImplementedError
+        self._push_exchange()
+        self._pull_exchange()
 
 
     def _pick_random_node(self) -> Node:

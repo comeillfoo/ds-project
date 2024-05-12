@@ -1,13 +1,22 @@
 #!/usr/bin/env python3
-from typing import Iterable
+from typing import Iterable, Optional
 
 import errno
 import threading
 import socket
 from functools import reduce
+from enum import IntEnum, auto
+
+import pickle
+
+
+class MessageType(IntEnum):
+    PUSH = 0
+    PULL = auto()
 
 
 class Node:
+    BUFFER_SIZE = 1024
 
     def __init__(self, nodes_pool, host: str, kind: socket.SocketKind):
         self.nodes_pool = nodes_pool
@@ -22,26 +31,33 @@ class Node:
         self.is_disseminated = False
 
 
-    def start_exchange(self, is_send: bool, neighbours: Iterable) -> threading.Thread:
+    def xmit(self, msg: MessageType, neighbours: Iterable) -> threading.Thread:
         def _xmit():
             for neigh in neighbours:
-                self.sock.sendto(b'test', neigh.sock.getsockname())
+                self.sock.sendto(pickle.dumps(msg), neigh.sock.getsockname())
                 # print(f'xmit {self.port} -> {neigh.port}')
 
+        t = threading.Thread(target=_xmit)
+        t.start()
+        return t
+
+
+    def recv(self) -> threading.Thread:
         def _recv():
             try:
-                self.sock.recvfrom(1024)
+                data, addr = self.sock.recvfrom(self.BUFFER_SIZE)
+                msg = pickle.loads(data)
+                if self.is_disseminated and msg == MessageType.PULL:
+                    self.sock.sendto(pickle.dumps(MessageType.PUSH), addr)
+                if msg == MessageType.PUSH:
+                    self.is_disseminated = True
             except socket.error as e:
                 if e.errno == errno.EAGAIN or e.errno == errno.EWOULDBLOCK:
                     return
                 print('Fatal error on', self.port, e)
                 return
 
-            self.is_disseminated = True
-
-        callback = _xmit if is_send else _recv
-
-        t = threading.Thread(target=callback)
+        t = threading.Thread(target=_recv)
         t.start()
         return t
 
