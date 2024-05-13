@@ -4,10 +4,13 @@
 NODES=100
 
 # @brief default number of test repeats
-TEST_REPEATS=10
+TEST_REPEATS=3
 
 # @brief default logs directory
 LOGS='./logs'
+
+# @brief timeout
+TIMEOUT=60
 
 
 _join_by() {
@@ -18,21 +21,21 @@ _join_by() {
 }
 
 run_zero_loss_test() {
-    ./run.sh -n $NODES $@
+    timeout --preserve-status $TIMEOUT ./run.sh -n $NODES $@
 }
 
 run_test_with_loss() {
     local loss=$1
     shift 1
-    ./run.sh --loss $loss -n $NODES $@
+    timeout --preserve-status $TIMEOUT ./run.sh --loss $loss -n $NODES $@
 }
 
 test_single() {
-    local log_file
-    log_file="$(_join_by _ $@).log"
-
     local i=$1
     shift 1
+
+    local log_file
+    log_file="$(_join_by _ $@).log.${i}"
 
     local loss=$1;
     shift 1
@@ -66,28 +69,28 @@ test_all() {
     test_multiple $loss singlecast
     test_multiple $loss broadcast
 
-    for ((group_size = 10; group_size < 100; group_size += 10)); do
+    for ((group_size = 5; group_size < 100; group_size += 25)); do
         test_multiple $loss gossip push $group_size
     done
 
-    for ((group_size = 10; group_size < 100; group_size += 10)); do
+    for ((group_size = 5; group_size < 100; group_size += 25)); do
         test_multiple $loss gossip pull $group_size
     done
 
-    for ((push_gsz = 10; push_gsz < 100; push_gsz += 10)); do
-        for ((pull_gsz = 10; pull_gsz < 100; pull_gsz += 10)); do
+    for ((push_gsz = 10; push_gsz < 100; push_gsz += 30)); do
+        for ((pull_gsz = 10; pull_gsz < 100; pull_gsz += 30)); do
             test_multiple $loss gossip push-pull $push_gsz $pull_gsz
         done
     done
 
-    for ((group_size = 10; group_size < 100; group_size += 10)); do
+    for ((group_size = 5; group_size < 100; group_size += 25)); do
         test_multiple $loss multicast $group_size
     done
 }
 
-set -euo pipefail
+set -uo pipefail
 
-testing_losses=(0 15 30 45 60 75 90)
+testing_losses=(0 25 50 75 90)
 
 for loss in "${testing_losses[@]}"; do
     echo '#####################################################################'

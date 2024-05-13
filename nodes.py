@@ -11,7 +11,7 @@ from enum import IntEnum, auto
 import pickle
 
 
-LOG_NODE_LEVEL=16
+LOG_NODE_LEVEL = 14
 logging.addLevelName(LOG_NODE_LEVEL, 'NODE')
 
 def log_node(msg, *args, **kwargs):
@@ -29,9 +29,13 @@ class MessageType(IntEnum):
             return 'PULL'
         return 'MessageType[Unknown]'
 
+    @classmethod
+    def size(cls) -> int:
+        return max([ len(pickle.dumps(msg_type)) for msg_type in cls ])
+
 
 class Node:
-    BUFFER_SIZE = 1024
+    BUFFER_SIZE = MessageType.size()
 
     def __init__(self, nodes_pool, host: str, kind: socket.SocketKind):
         self.nodes_pool = nodes_pool
@@ -62,7 +66,6 @@ class Node:
             try:
                 data, addr = self.sock.recvfrom(self.BUFFER_SIZE)
                 msg = pickle.loads(data)
-
                 log_node('recv [%i] <- (%i): %s', self.port, addr[1],
                               str(msg))
 
@@ -75,7 +78,9 @@ class Node:
                     log_node('recv [%i]: is disseminated', self.port)
                     self.is_disseminated = True
             except socket.error as e:
-                if e.errno == errno.EAGAIN or e.errno == errno.EWOULDBLOCK:
+                if e.errno == errno.EAGAIN \
+                    or e.errno == errno.EWOULDBLOCK \
+                    or isinstance(e, socket.timeout):
                     return
                 logging.critical('recv [%i]: socker error', self.port,
                                  exc_info=e)

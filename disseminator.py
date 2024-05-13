@@ -10,11 +10,18 @@ DEFAULT_NUMBER_NODES = 3
 DEFAULT_ROUNDS_LIMIT = 500
 DEFAULT_GROUP_SIZE = 2
 
+LOG_ROUNDS_LEVEL = 18
+logging.addLevelName(LOG_ROUNDS_LEVEL, 'ROUNDS')
+
+def log_rounds(msg, *args, **kwargs):
+    logging.log(LOG_ROUNDS_LEVEL, msg, *args, **kwargs)
+
 def count_logging_level(verbosity: int) -> int:
     return {
         0: logging.INFO,
-        1: LOG_PROTO_LEVEL,
-        2: LOG_NODE_LEVEL,
+        1: LOG_ROUNDS_LEVEL,
+        2: LOG_PROTO_LEVEL,
+        3: LOG_NODE_LEVEL,
     }.get(verbosity, logging.DEBUG)
 
 @click.group()
@@ -51,7 +58,7 @@ def run(limit: int, proto: DisseminationProtocol):
                 notified = proto.pool.count_disseminated_nodes()
                 not_notified = proto.pool.count_disseminated_nodes(False)
 
-                logging.info('round [%i/%i]: %i/%i/%i; (total/notified/not notified)',
+                log_rounds('round [%i/%i]: %i/%i/%i; (total/notified/not notified)',
                              rounds, limit, overall_nodes, notified, not_notified)
 
                 if should_stop: break
@@ -60,8 +67,10 @@ def run(limit: int, proto: DisseminationProtocol):
             if not proto.pool.is_pool_disseminated():
                 notified = proto.pool.count_disseminated_nodes()
                 not_notified = proto.pool.count_disseminated_nodes(False)
+                logging.warning('not disseminated: [%s]',
+                                ', '.join(map(str, proto.pool.i_disseminated_nodes(False))))
                 logging.info('FAILED to disseminate pool: [%i/%i/%i], (%i/%i)',
-                            overall_nodes, notified, not_notified, rounds, limit)
+                            overall_nodes, notified, not_notified, rounds - 1, limit)
                 return
 
             logging.info('SUCCEED in dissemination: (%i/%i) rounds',

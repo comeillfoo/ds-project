@@ -8,7 +8,7 @@ import logging
 from nodes import NodesPool, Node, MessageType
 
 
-LOG_PROTO_LEVEL=18
+LOG_PROTO_LEVEL = 16
 logging.addLevelName(LOG_PROTO_LEVEL, 'PROTO')
 
 def log_proto(msg, *args, **kwargs):
@@ -77,11 +77,14 @@ class Multicast(DisseminationProtocol):
             receivers = set(map(self._inode, receivers_i))
 
             sender_t = self._inode(sender_i).xmit(MessageType.PUSH, receivers)
-            receivers_t = [ receiver.recv() for receiver in receivers ]
+            log_proto('triggered sender')
 
+            receivers_t = [ receiver.recv() for receiver in receivers ]
+            log_proto('triggered receivers')
+
+            sender_t.join()
             for receiver_t in receivers_t:
                 receiver_t.join()
-            sender_t.join()
 
         self.send_idx_queue = self.pool.i_disseminated_nodes()
         return super().exchange()
@@ -124,9 +127,9 @@ class Gossip(DisseminationProtocol):
             receivers_t = [ receiver.recv() for receiver in receivers ]
             log_proto('triggerred receiving pushes')
 
+            pusher_t.join()
             for receiver_t in receivers_t:
                 receiver_t.join()
-            pusher_t.join()
 
         # TODO: maybe restrict disseminated nodes from previous rounds from
         # sending again
@@ -154,13 +157,11 @@ class Gossip(DisseminationProtocol):
             pullers_t = [ puller.recv() for _ in range(len(receivers)) ]
             log_proto('triggerred receiving pull responses')
 
+            puller_request_t.join()
             for receiver_t in receivers_t:
                 receiver_t.join()
-
             for puller_t in pullers_t:
                 puller_t.join()
-
-            puller_request_t.join()
 
         self.pull_queue = self.pool.disseminated_nodes(False)
 

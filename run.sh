@@ -66,7 +66,7 @@ if ! ip netns add $NS; then
     exit $RC_NOT_OK
 fi
 echo "## Added network namespace $NS"
-trap cleanup 1 2 3 6
+trap cleanup 1 2 3 6 15
 
 if [ -n "${loss_random}" ]; then
     echo "## Setting random loss to ${loss_random}..."
