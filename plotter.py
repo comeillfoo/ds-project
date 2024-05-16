@@ -73,13 +73,24 @@ def main() -> int:
 
     for testcase, results in logs.items():
         fig, ax = plt.subplots(1, figsize=(10, 5))
+        n = len(results)
         ax.set_xticks(range(0, 100, 5))
+        y_avg = [0.0] * n
         for i, result in results.items():
             result = sorted(result)
             print(testcase, result)
             x = list(map(lambda r: r[0], result))
+            x_avg = x
+
             y = list(map(lambda r: r[1], result))
-            ax.plot(x, y, 'o--', label=str(i))
+            y_avg = [ y_acc + y_curr for y_acc, y_curr in zip(y_avg, y) ]
+
+            ax.plot(x, y, '--', label=str(i))
+
+        y_avg = list(map(lambda v: v / n, y_avg))
+        ax.plot(x_avg, y_avg, 'o-', label='average')
+        for x, y in zip(x_avg, y_avg):
+            ax.text(x, y * 1.05, '%.2f' % y, ha='center')
 
         plt.title(f'Dissemination for {testcase}')
         plt.xlabel('Chance to loss message, %')
