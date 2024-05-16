@@ -75,7 +75,7 @@ def main() -> int:
         fig, ax = plt.subplots(1, figsize=(10, 5))
         n = len(results)
         ax.set_xticks(range(0, 100, 5))
-        y_avg = [0.0] * n
+        y_avg = [0.0] * len(results[0])
         for i, result in results.items():
             result = sorted(result)
             print(testcase, result)
