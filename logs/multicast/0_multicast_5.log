@@ -3,7 +3,7 @@
 ## Starting test (args: --loss-chance 0 --nodes 100 multicast 5)...
 INFO:root:total: 4850 msgs, discarded: 0 msgs
 INFO:root:expected: 0.000000, actual: 0.000000
-INFO:root:SUCCEED in dissemination: (20/1000) rounds
+INFO:root:SUCCEED in dissemination: (20/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #1: PROTO: multicast; LOSS: 0%; ARGS: 5
@@ -11,7 +11,7 @@ INFO:root:SUCCEED in dissemination: (20/1000) rounds
 ## Starting test (args: --loss-chance 0 --nodes 100 multicast 5)...
 INFO:root:total: 4850 msgs, discarded: 0 msgs
 INFO:root:expected: 0.000000, actual: 0.000000
-INFO:root:SUCCEED in dissemination: (20/1000) rounds
+INFO:root:SUCCEED in dissemination: (20/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #2: PROTO: multicast; LOSS: 0%; ARGS: 5
@@ -19,7 +19,7 @@ INFO:root:SUCCEED in dissemination: (20/1000) rounds
 ## Starting test (args: --loss-chance 0 --nodes 100 multicast 5)...
 INFO:root:total: 4850 msgs, discarded: 0 msgs
 INFO:root:expected: 0.000000, actual: 0.000000
-INFO:root:SUCCEED in dissemination: (20/1000) rounds
+INFO:root:SUCCEED in dissemination: (20/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #3: PROTO: multicast; LOSS: 0%; ARGS: 5
@@ -27,7 +27,7 @@ INFO:root:SUCCEED in dissemination: (20/1000) rounds
 ## Starting test (args: --loss-chance 0 --nodes 100 multicast 5)...
 INFO:root:total: 4850 msgs, discarded: 0 msgs
 INFO:root:expected: 0.000000, actual: 0.000000
-INFO:root:SUCCEED in dissemination: (20/1000) rounds
+INFO:root:SUCCEED in dissemination: (20/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #4: PROTO: multicast; LOSS: 0%; ARGS: 5
@@ -35,7 +35,7 @@ INFO:root:SUCCEED in dissemination: (20/1000) rounds
 ## Starting test (args: --loss-chance 0 --nodes 100 multicast 5)...
 INFO:root:total: 4850 msgs, discarded: 0 msgs
 INFO:root:expected: 0.000000, actual: 0.000000
-INFO:root:SUCCEED in dissemination: (20/1000) rounds
+INFO:root:SUCCEED in dissemination: (20/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #5: PROTO: multicast; LOSS: 0%; ARGS: 5
@@ -43,7 +43,7 @@ INFO:root:SUCCEED in dissemination: (20/1000) rounds
 ## Starting test (args: --loss-chance 0 --nodes 100 multicast 5)...
 INFO:root:total: 4850 msgs, discarded: 0 msgs
 INFO:root:expected: 0.000000, actual: 0.000000
-INFO:root:SUCCEED in dissemination: (20/1000) rounds
+INFO:root:SUCCEED in dissemination: (20/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #6: PROTO: multicast; LOSS: 0%; ARGS: 5
@@ -51,7 +51,7 @@ INFO:root:SUCCEED in dissemination: (20/1000) rounds
 ## Starting test (args: --loss-chance 0 --nodes 100 multicast 5)...
 INFO:root:total: 4850 msgs, discarded: 0 msgs
 INFO:root:expected: 0.000000, actual: 0.000000
-INFO:root:SUCCEED in dissemination: (20/1000) rounds
+INFO:root:SUCCEED in dissemination: (20/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #7: PROTO: multicast; LOSS: 0%; ARGS: 5
@@ -59,7 +59,7 @@ INFO:root:SUCCEED in dissemination: (20/1000) rounds
 ## Starting test (args: --loss-chance 0 --nodes 100 multicast 5)...
 INFO:root:total: 4850 msgs, discarded: 0 msgs
 INFO:root:expected: 0.000000, actual: 0.000000
-INFO:root:SUCCEED in dissemination: (20/1000) rounds
+INFO:root:SUCCEED in dissemination: (20/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #8: PROTO: multicast; LOSS: 0%; ARGS: 5
@@ -67,7 +67,7 @@ INFO:root:SUCCEED in dissemination: (20/1000) rounds
 ## Starting test (args: --loss-chance 0 --nodes 100 multicast 5)...
 INFO:root:total: 4850 msgs, discarded: 0 msgs
 INFO:root:expected: 0.000000, actual: 0.000000
-INFO:root:SUCCEED in dissemination: (20/1000) rounds
+INFO:root:SUCCEED in dissemination: (20/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #9: PROTO: multicast; LOSS: 0%; ARGS: 5
@@ -75,6 +75,6 @@ INFO:root:SUCCEED in dissemination: (20/1000) rounds
 ## Starting test (args: --loss-chance 0 --nodes 100 multicast 5)...
 INFO:root:total: 4850 msgs, discarded: 0 msgs
 INFO:root:expected: 0.000000, actual: 0.000000
-INFO:root:SUCCEED in dissemination: (20/1000) rounds
+INFO:root:SUCCEED in dissemination: (20/2000) rounds
 # ok: test finished successfully
 #####################################################################

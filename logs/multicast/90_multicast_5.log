@@ -1,80 +1,80 @@
 # Test #0: PROTO: multicast; LOSS: 90%; ARGS: 5
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 multicast 5)...
-INFO:root:total: 16695 msgs, discarded: 15090 msgs
-INFO:root:expected: 0.900000, actual: 0.903863
-INFO:root:SUCCEED in dissemination: (65/1000) rounds
+INFO:root:total: 13595 msgs, discarded: 12243 msgs
+INFO:root:expected: 0.900000, actual: 0.900552
+INFO:root:SUCCEED in dissemination: (56/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #1: PROTO: multicast; LOSS: 90%; ARGS: 5
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 multicast 5)...
-INFO:root:total: 13390 msgs, discarded: 12000 msgs
-INFO:root:expected: 0.900000, actual: 0.896191
-INFO:root:SUCCEED in dissemination: (57/1000) rounds
+INFO:root:total: 14085 msgs, discarded: 12759 msgs
+INFO:root:expected: 0.900000, actual: 0.905857
+INFO:root:SUCCEED in dissemination: (56/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #2: PROTO: multicast; LOSS: 90%; ARGS: 5
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 multicast 5)...
-INFO:root:total: 13120 msgs, discarded: 11775 msgs
-INFO:root:expected: 0.900000, actual: 0.897485
-INFO:root:SUCCEED in dissemination: (60/1000) rounds
+INFO:root:total: 17705 msgs, discarded: 16023 msgs
+INFO:root:expected: 0.900000, actual: 0.904999
+INFO:root:SUCCEED in dissemination: (68/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #3: PROTO: multicast; LOSS: 90%; ARGS: 5
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 multicast 5)...
-INFO:root:total: 12610 msgs, discarded: 11338 msgs
-INFO:root:expected: 0.900000, actual: 0.899128
-INFO:root:SUCCEED in dissemination: (52/1000) rounds
+INFO:root:total: 14635 msgs, discarded: 13184 msgs
+INFO:root:expected: 0.900000, actual: 0.900854
+INFO:root:SUCCEED in dissemination: (60/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #4: PROTO: multicast; LOSS: 90%; ARGS: 5
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 multicast 5)...
-INFO:root:total: 14080 msgs, discarded: 12648 msgs
-INFO:root:expected: 0.900000, actual: 0.898295
-INFO:root:SUCCEED in dissemination: (53/1000) rounds
+INFO:root:total: 15275 msgs, discarded: 13821 msgs
+INFO:root:expected: 0.900000, actual: 0.904812
+INFO:root:SUCCEED in dissemination: (59/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #5: PROTO: multicast; LOSS: 90%; ARGS: 5
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 multicast 5)...
-INFO:root:total: 13625 msgs, discarded: 12280 msgs
-INFO:root:expected: 0.900000, actual: 0.901284
-INFO:root:SUCCEED in dissemination: (51/1000) rounds
+INFO:root:total: 12325 msgs, discarded: 11083 msgs
+INFO:root:expected: 0.900000, actual: 0.899229
+INFO:root:SUCCEED in dissemination: (53/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #6: PROTO: multicast; LOSS: 90%; ARGS: 5
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 multicast 5)...
-INFO:root:total: 14320 msgs, discarded: 12864 msgs
-INFO:root:expected: 0.900000, actual: 0.898324
-INFO:root:SUCCEED in dissemination: (60/1000) rounds
+INFO:root:total: 13770 msgs, discarded: 12403 msgs
+INFO:root:expected: 0.900000, actual: 0.900726
+INFO:root:SUCCEED in dissemination: (59/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #7: PROTO: multicast; LOSS: 90%; ARGS: 5
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 multicast 5)...
-INFO:root:total: 16350 msgs, discarded: 14778 msgs
-INFO:root:expected: 0.900000, actual: 0.903853
-INFO:root:SUCCEED in dissemination: (66/1000) rounds
+INFO:root:total: 15740 msgs, discarded: 14178 msgs
+INFO:root:expected: 0.900000, actual: 0.900762
+INFO:root:SUCCEED in dissemination: (64/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #8: PROTO: multicast; LOSS: 90%; ARGS: 5
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 multicast 5)...
-INFO:root:total: 11820 msgs, discarded: 10645 msgs
-INFO:root:expected: 0.900000, actual: 0.900592
-INFO:root:SUCCEED in dissemination: (55/1000) rounds
+INFO:root:total: 15615 msgs, discarded: 14023 msgs
+INFO:root:expected: 0.900000, actual: 0.898047
+INFO:root:SUCCEED in dissemination: (63/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #9: PROTO: multicast; LOSS: 90%; ARGS: 5
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 multicast 5)...
-INFO:root:total: 18395 msgs, discarded: 16555 msgs
-INFO:root:expected: 0.900000, actual: 0.899973
-INFO:root:SUCCEED in dissemination: (69/1000) rounds
+INFO:root:total: 13695 msgs, discarded: 12321 msgs
+INFO:root:expected: 0.900000, actual: 0.899671
+INFO:root:SUCCEED in dissemination: (58/2000) rounds
 # ok: test finished successfully
 #####################################################################

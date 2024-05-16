@@ -1,80 +1,80 @@
 # Test #0: PROTO: gossip; LOSS: 25%; ARGS: push-pull 5 55
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 25 --nodes 100 gossip push-pull 5 55)...
-INFO:root:total: 7632 msgs, discarded: 1885 msgs
-INFO:root:expected: 0.250000, actual: 0.246986
-INFO:root:SUCCEED in dissemination: (1/1000) rounds
+INFO:root:total: 7638 msgs, discarded: 1867 msgs
+INFO:root:expected: 0.250000, actual: 0.244436
+INFO:root:SUCCEED in dissemination: (1/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #1: PROTO: gossip; LOSS: 25%; ARGS: push-pull 5 55
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 25 --nodes 100 gossip push-pull 5 55)...
-INFO:root:total: 7633 msgs, discarded: 1912 msgs
-INFO:root:expected: 0.250000, actual: 0.250491
-INFO:root:SUCCEED in dissemination: (1/1000) rounds
+INFO:root:total: 7689 msgs, discarded: 1935 msgs
+INFO:root:expected: 0.250000, actual: 0.251658
+INFO:root:SUCCEED in dissemination: (2/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #2: PROTO: gossip; LOSS: 25%; ARGS: push-pull 5 55
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 25 --nodes 100 gossip push-pull 5 55)...
-INFO:root:total: 7660 msgs, discarded: 1922 msgs
-INFO:root:expected: 0.250000, actual: 0.250914
-INFO:root:SUCCEED in dissemination: (2/1000) rounds
+INFO:root:total: 7684 msgs, discarded: 1961 msgs
+INFO:root:expected: 0.250000, actual: 0.255206
+INFO:root:SUCCEED in dissemination: (2/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #3: PROTO: gossip; LOSS: 25%; ARGS: push-pull 5 55
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 25 --nodes 100 gossip push-pull 5 55)...
-INFO:root:total: 7660 msgs, discarded: 1898 msgs
-INFO:root:expected: 0.250000, actual: 0.247781
-INFO:root:SUCCEED in dissemination: (2/1000) rounds
+INFO:root:total: 7653 msgs, discarded: 1912 msgs
+INFO:root:expected: 0.250000, actual: 0.249837
+INFO:root:SUCCEED in dissemination: (1/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #4: PROTO: gossip; LOSS: 25%; ARGS: push-pull 5 55
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 25 --nodes 100 gossip push-pull 5 55)...
-INFO:root:total: 7626 msgs, discarded: 1903 msgs
-INFO:root:expected: 0.250000, actual: 0.249541
-INFO:root:SUCCEED in dissemination: (1/1000) rounds
+INFO:root:total: 7611 msgs, discarded: 1884 msgs
+INFO:root:expected: 0.250000, actual: 0.247536
+INFO:root:SUCCEED in dissemination: (1/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #5: PROTO: gossip; LOSS: 25%; ARGS: push-pull 5 55
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 25 --nodes 100 gossip push-pull 5 55)...
-INFO:root:total: 7579 msgs, discarded: 1893 msgs
-INFO:root:expected: 0.250000, actual: 0.249769
-INFO:root:SUCCEED in dissemination: (1/1000) rounds
+INFO:root:total: 7587 msgs, discarded: 1886 msgs
+INFO:root:expected: 0.250000, actual: 0.248583
+INFO:root:SUCCEED in dissemination: (1/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #6: PROTO: gossip; LOSS: 25%; ARGS: push-pull 5 55
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 25 --nodes 100 gossip push-pull 5 55)...
-INFO:root:total: 7658 msgs, discarded: 1909 msgs
-INFO:root:expected: 0.250000, actual: 0.249282
-INFO:root:SUCCEED in dissemination: (2/1000) rounds
+INFO:root:total: 7591 msgs, discarded: 1860 msgs
+INFO:root:expected: 0.250000, actual: 0.245027
+INFO:root:SUCCEED in dissemination: (1/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #7: PROTO: gossip; LOSS: 25%; ARGS: push-pull 5 55
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 25 --nodes 100 gossip push-pull 5 55)...
-INFO:root:total: 7675 msgs, discarded: 1865 msgs
-INFO:root:expected: 0.250000, actual: 0.242997
-INFO:root:SUCCEED in dissemination: (2/1000) rounds
+INFO:root:total: 7647 msgs, discarded: 1928 msgs
+INFO:root:expected: 0.250000, actual: 0.252125
+INFO:root:SUCCEED in dissemination: (2/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #8: PROTO: gossip; LOSS: 25%; ARGS: push-pull 5 55
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 25 --nodes 100 gossip push-pull 5 55)...
-INFO:root:total: 7558 msgs, discarded: 1909 msgs
-INFO:root:expected: 0.250000, actual: 0.252580
-INFO:root:SUCCEED in dissemination: (1/1000) rounds
+INFO:root:total: 7609 msgs, discarded: 1850 msgs
+INFO:root:expected: 0.250000, actual: 0.243133
+INFO:root:SUCCEED in dissemination: (1/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #9: PROTO: gossip; LOSS: 25%; ARGS: push-pull 5 55
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 25 --nodes 100 gossip push-pull 5 55)...
-INFO:root:total: 7646 msgs, discarded: 1889 msgs
-INFO:root:expected: 0.250000, actual: 0.247057
-INFO:root:SUCCEED in dissemination: (1/1000) rounds
+INFO:root:total: 7628 msgs, discarded: 1863 msgs
+INFO:root:expected: 0.250000, actual: 0.244232
+INFO:root:SUCCEED in dissemination: (1/2000) rounds
 # ok: test finished successfully
 #####################################################################

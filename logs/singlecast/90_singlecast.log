@@ -1,85 +1,80 @@
 # Test #0: PROTO: singlecast; LOSS: 90%; ARGS: 
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 singlecast)...
-INFO:root:total: 51291 msgs, discarded: 46295 msgs
-INFO:root:expected: 0.900000, actual: 0.902595
-INFO:root:SUCCEED in dissemination: (975/1000) rounds
+INFO:root:total: 46458 msgs, discarded: 41808 msgs
+INFO:root:expected: 0.900000, actual: 0.899910
+INFO:root:SUCCEED in dissemination: (967/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #1: PROTO: singlecast; LOSS: 90%; ARGS: 
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 singlecast)...
-INFO:root:total: 46027 msgs, discarded: 41369 msgs
-INFO:root:expected: 0.900000, actual: 0.898799
-INFO:root:SUCCEED in dissemination: (955/1000) rounds
+INFO:root:total: 52795 msgs, discarded: 47516 msgs
+INFO:root:expected: 0.900000, actual: 0.900009
+INFO:root:SUCCEED in dissemination: (1154/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #2: PROTO: singlecast; LOSS: 90%; ARGS: 
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 singlecast)...
-INFO:root:total: 48356 msgs, discarded: 43584 msgs
-INFO:root:expected: 0.900000, actual: 0.901315
-INFO:root:SUCCEED in dissemination: (921/1000) rounds
+INFO:root:total: 34838 msgs, discarded: 31280 msgs
+INFO:root:expected: 0.900000, actual: 0.897870
+INFO:root:SUCCEED in dissemination: (743/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #3: PROTO: singlecast; LOSS: 90%; ARGS: 
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 singlecast)...
-INFO:root:total: 45480 msgs, discarded: 40958 msgs
-INFO:root:expected: 0.900000, actual: 0.900572
-WARNING:root:not disseminated: [96, 97, 98, 99, 93, 94, 95]
-INFO:root:FAILED to disseminate pool: [100/93/7], (1000/1000)
+INFO:root:total: 58260 msgs, discarded: 52312 msgs
+INFO:root:expected: 0.900000, actual: 0.897906
+INFO:root:SUCCEED in dissemination: (1101/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #4: PROTO: singlecast; LOSS: 90%; ARGS: 
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 singlecast)...
-INFO:root:total: 46507 msgs, discarded: 41722 msgs
-INFO:root:expected: 0.900000, actual: 0.897112
-INFO:root:SUCCEED in dissemination: (923/1000) rounds
+INFO:root:total: 56951 msgs, discarded: 51224 msgs
+INFO:root:expected: 0.900000, actual: 0.899440
+INFO:root:SUCCEED in dissemination: (1143/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #5: PROTO: singlecast; LOSS: 90%; ARGS: 
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 singlecast)...
-INFO:root:total: 40927 msgs, discarded: 36880 msgs
-INFO:root:expected: 0.900000, actual: 0.901117
-INFO:root:SUCCEED in dissemination: (997/1000) rounds
+INFO:root:total: 53968 msgs, discarded: 48507 msgs
+INFO:root:expected: 0.900000, actual: 0.898810
+INFO:root:SUCCEED in dissemination: (1124/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #6: PROTO: singlecast; LOSS: 90%; ARGS: 
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 singlecast)...
-INFO:root:total: 45825 msgs, discarded: 41249 msgs
-INFO:root:expected: 0.900000, actual: 0.900142
-WARNING:root:not disseminated: [96, 97, 98, 99, 92, 93, 94, 95]
-INFO:root:FAILED to disseminate pool: [100/92/8], (1000/1000)
+INFO:root:total: 48541 msgs, discarded: 43766 msgs
+INFO:root:expected: 0.900000, actual: 0.901630
+INFO:root:SUCCEED in dissemination: (1034/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #7: PROTO: singlecast; LOSS: 90%; ARGS: 
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 singlecast)...
-INFO:root:total: 52628 msgs, discarded: 47262 msgs
-INFO:root:expected: 0.900000, actual: 0.898039
-WARNING:root:not disseminated: [99]
-INFO:root:FAILED to disseminate pool: [100/99/1], (1000/1000)
+INFO:root:total: 54740 msgs, discarded: 49347 msgs
+INFO:root:expected: 0.900000, actual: 0.901480
+INFO:root:SUCCEED in dissemination: (1110/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #8: PROTO: singlecast; LOSS: 90%; ARGS: 
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 singlecast)...
-INFO:root:total: 51860 msgs, discarded: 46687 msgs
-INFO:root:expected: 0.900000, actual: 0.900251
-WARNING:root:not disseminated: [97, 98, 99]
-INFO:root:FAILED to disseminate pool: [100/97/3], (1000/1000)
+INFO:root:total: 63500 msgs, discarded: 57152 msgs
+INFO:root:expected: 0.900000, actual: 0.900031
+INFO:root:SUCCEED in dissemination: (1108/2000) rounds
 # ok: test finished successfully
 #####################################################################
 # Test #9: PROTO: singlecast; LOSS: 90%; ARGS: 
 ## Sourcing local environment...
 ## Starting test (args: --loss-chance 90 --nodes 100 singlecast)...
-INFO:root:total: 52281 msgs, discarded: 47193 msgs
-INFO:root:expected: 0.900000, actual: 0.902680
-WARNING:root:not disseminated: [98, 99]
-INFO:root:FAILED to disseminate pool: [100/98/2], (1000/1000)
+INFO:root:total: 56305 msgs, discarded: 50606 msgs
+INFO:root:expected: 0.900000, actual: 0.898783
+INFO:root:SUCCEED in dissemination: (1124/2000) rounds
 # ok: test finished successfully
 #####################################################################
