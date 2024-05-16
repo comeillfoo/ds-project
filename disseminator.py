@@ -29,10 +29,12 @@ def count_logging_level(verbosity: int) -> int:
               show_default=True, help='Number of nodes')
 @click.option('-l', '--limit', type=int, default=DEFAULT_ROUNDS_LIMIT,
               show_default=True, help='Maximum rounds of simulation')
+@click.option('-c', '--loss-chance', type=float, default=0.0,
+              show_default=True, help='Probability of losing a message')
 @click.option('-v', '--verbose', count=True, default=0,
               help='Set verbosity level, default INFO')
 @click.pass_context
-def main(ctx, nodes: int, limit: int, verbose: int):
+def main(ctx, nodes: int, limit: int, loss_chance: float, verbose: int):
     logging.basicConfig(level=count_logging_level(verbose))
 
     if nodes <= 0:
@@ -46,6 +48,7 @@ def main(ctx, nodes: int, limit: int, verbose: int):
     ctx.ensure_object(dict)
     ctx.obj['nodes'] = nodes
     ctx.obj['limit'] = limit
+    ctx.obj['loss'] = loss_chance
 
 
 def run(limit: int, proto: DisseminationProtocol):
@@ -63,6 +66,11 @@ def run(limit: int, proto: DisseminationProtocol):
 
                 if should_stop: break
                 rounds += 1
+
+            logging.info('total: %i msgs, discarded: %i msgs',
+                         proto.pool.counters['total'], proto.pool.counters['discarded'])
+            logging.info('expected: %f, actual: %f', proto.pool.discard_chance,
+                         proto.pool.actual_discard_chance())
 
             if not proto.pool.is_pool_disseminated():
                 notified = proto.pool.count_disseminated_nodes()
@@ -87,23 +95,25 @@ def check_group_value(ctx, group: int, msg: str):
 @main.command()
 @click.pass_context
 def singlecast(ctx):
-    run(ctx.obj['limit'], Multicast(NodesPool(ctx.obj['nodes']), 1))
+    limit, nodes, loss = ctx.obj['limit'], ctx.obj['nodes'], ctx.obj['loss']
+    run(limit, Multicast(NodesPool(nodes, loss), 1))
 
 
 @main.command()
 @click.argument('group', type=int, default=DEFAULT_GROUP_SIZE)
 @click.pass_context
 def multicast(ctx, group: int):
+    limit, nodes, loss = ctx.obj['limit'], ctx.obj['nodes'], ctx.obj['loss']
     check_group_value(ctx, group, 'Multicast group size should be between 1 and'
                       ' nodes number')
-    run(ctx.obj['limit'], Multicast(NodesPool(ctx.obj['nodes']), group))
+    run(limit, Multicast(NodesPool(nodes, loss), group))
 
 
 @main.command()
 @click.pass_context
 def broadcast(ctx):
-    run(ctx.obj['limit'], Multicast(NodesPool(ctx.obj['nodes']),
-                                    ctx.obj['nodes'] - 1))
+    limit, nodes, loss = ctx.obj['limit'], ctx.obj['nodes'], ctx.obj['loss']
+    run(limit, Multicast(NodesPool(nodes, loss), nodes - 1))
 
 
 @main.group()
@@ -119,18 +129,20 @@ GOSSIP_ERROR_MSG = 'Number of random nodes for gossip should be between 1 and ' 
 @click.argument('group', type=int, default=DEFAULT_GROUP_SIZE)
 @click.pass_context
 def push(ctx, group: int):
+    limit, nodes, loss = ctx.obj['limit'], ctx.obj['nodes'], ctx.obj['loss']
     check_group_value(ctx, group, GOSSIP_ERROR_MSG)
 
-    run(ctx.obj['limit'], Gossip(NodesPool(ctx.obj['nodes']), 'push', group, 0))
+    run(limit, Gossip(NodesPool(nodes, loss), 'push', group, 0))
 
 
 @gossip.command()
 @click.argument('group', type=int, default=DEFAULT_GROUP_SIZE)
 @click.pass_context
 def pull(ctx, group: int):
+    limit, nodes, loss = ctx.obj['limit'], ctx.obj['nodes'], ctx.obj['loss']
     check_group_value(ctx, group, GOSSIP_ERROR_MSG)
 
-    run(ctx.obj['limit'], Gossip(NodesPool(ctx.obj['nodes']), 'pull', 0, group))
+    run(limit, Gossip(NodesPool(nodes, loss), 'pull', 0, group))
 
 
 @gossip.command()
@@ -138,11 +150,12 @@ def pull(ctx, group: int):
 @click.argument('pull_group', type=int, default=DEFAULT_GROUP_SIZE)
 @click.pass_context
 def push_pull(ctx, push_group: int, pull_group: int):
+    limit, nodes, loss = ctx.obj['limit'], ctx.obj['nodes'], ctx.obj['loss']
     check_group_value(ctx, push_group, GOSSIP_ERROR_MSG)
     check_group_value(ctx, pull_group, GOSSIP_ERROR_MSG)
 
-    run(ctx.obj['limit'], Gossip(NodesPool(ctx.obj['nodes']), 'push-pull',
-                                 push_group, pull_group))
+    run(limit, Gossip(NodesPool(nodes, loss), 'push-pull', push_group,
+                      pull_group))
 
 
 if __name__ == '__main__':

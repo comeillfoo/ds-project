@@ -8,7 +8,7 @@ import socket
 from functools import reduce
 from enum import IntEnum, auto
 
-import pickle
+import random
 
 
 LOG_NODE_LEVEL = 14
@@ -29,73 +29,57 @@ class MessageType(IntEnum):
             return 'PULL'
         return 'MessageType[Unknown]'
 
-    @classmethod
-    def size(cls) -> int:
-        return max([ len(pickle.dumps(msg_type)) for msg_type in cls ])
-
 
 class Node:
-    BUFFER_SIZE = MessageType.size()
 
-    def __init__(self, nodes_pool, host: str, kind: socket.SocketKind):
+    def __init__(self, nodes_pool, id: int):
         self.nodes_pool = nodes_pool
-
-        self.sock = socket.socket(socket.AF_INET, kind)
-        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.sock.setblocking(False)
-
-        self.sock.bind((host, 0))
-
-        self.port = self.sock.getsockname()[1]
+        self.nid = id
         self.is_disseminated = False
 
 
-    def xmit(self, msg: MessageType, neighbours: Iterable) -> threading.Thread:
-        def _xmit():
-            for neigh in neighbours:
-                self.sock.sendto(pickle.dumps(msg), neigh.sock.getsockname())
-                log_node('xmit [%i] -> (%i)', self.port, neigh.port)
-
-        t = threading.Thread(target=_xmit)
-        t.start()
-        return t
+    def xmit(self, neigh, msg: MessageType) -> bool:
+        log_node('xmit [%i] ---> (%i): %s', self.nid, neigh.nid, str(msg))
+        return neigh.recv(self, msg)
 
 
-    def recv(self) -> threading.Thread:
-        def _recv():
-            try:
-                data, addr = self.sock.recvfrom(self.BUFFER_SIZE)
-                msg = pickle.loads(data)
-                log_node('recv [%i] <- (%i): %s', self.port, addr[1],
-                              str(msg))
+    def recv(self, neigh, msg: MessageType) -> bool:
+        if self.nodes_pool.should_discard():
+            log_node('recv [%i] x--- (%i): msg[%s] lost', self.nid, neigh.nid,
+                     str(msg))
+            return False
 
-                if self.is_disseminated and msg == MessageType.PULL:
-                    log_node('xmit [%i] -> (%i): ACK[%s]', self.port,
-                                  addr[1], str(MessageType.PUSH))
-                    self.sock.sendto(pickle.dumps(MessageType.PUSH), addr)
+        log_node('recv [%i] <--- (%i): %s', self.nid, neigh.nid, str(msg))
+        if self.is_disseminated and msg == MessageType.PULL:
+            self.xmit(neigh, MessageType.PUSH)
 
-                if msg == MessageType.PUSH:
-                    log_node('recv [%i]: is disseminated', self.port)
-                    self.is_disseminated = True
-            except socket.error as e:
-                if e.errno == errno.EAGAIN \
-                    or e.errno == errno.EWOULDBLOCK \
-                    or isinstance(e, socket.timeout):
-                    return
-                logging.critical('recv [%i]: socker error', self.port,
-                                 exc_info=e)
-            except Exception as e:
-                logging.critical('recv [%i]: unforeseen error', self.port,
-                                 exc_info=e)
-
-        t = threading.Thread(target=_recv)
-        t.start()
-        return t
+        if msg == MessageType.PUSH:
+            self.is_disseminated = True
+        return True
 
 
 class NodesPool:
-    def __init__(self, nodes_n: int):
-        self.nodes = [ Node(self, '127.0.0.1', socket.SOCK_DGRAM) for _ in range(nodes_n) ]
+    def __init__(self, nodes_n: int, discard_chance: float = 0.0):
+        self.nodes = [ Node(self, nid) for nid in range(nodes_n) ]
+        self.discard_chance = discard_chance
+        self.counters = {
+            'total': 0,
+            'discarded': 0,
+        }
+
+
+    def should_discard(self) -> bool:
+        self.counters['total'] += 1
+        chance = random.uniform(0.0, 1.0)
+        logging.debug('dice showed: %f', chance)
+        if self.discard_chance <= chance:
+            return False
+        self.counters['discarded'] += 1
+        return True
+
+
+    def actual_discard_chance(self) -> float:
+        return self.counters['discarded'] / self.counters['total']
 
 
     def __enter__(self):
@@ -103,10 +87,7 @@ class NodesPool:
 
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        for node in self.nodes:
-            ip, port = node.sock.getsockname()
-            logging.debug('closing socket %s/%i at pool...', ip, port)
-            node.sock.close()
+        pass
 
 
     def is_pool_disseminated(self) -> bool:

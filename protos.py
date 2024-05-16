@@ -76,15 +76,8 @@ class Multicast(DisseminationProtocol):
 
             receivers = set(map(self._inode, receivers_i))
 
-            sender_t = self._inode(sender_i).xmit(MessageType.PUSH, receivers)
-            log_proto('triggered sender')
-
-            receivers_t = [ receiver.recv() for receiver in receivers ]
-            log_proto('triggered receivers')
-
-            sender_t.join()
-            for receiver_t in receivers_t:
-                receiver_t.join()
+            for receiver in receivers:
+                self._inode(sender_i).xmit(receiver, MessageType.PUSH)
 
         self.send_idx_queue = self.pool.i_disseminated_nodes()
         return super().exchange()
@@ -113,23 +106,16 @@ class Gossip(DisseminationProtocol):
         log_proto('starting push exchange...')
         while len(self.push_queue) > 0:
             pusher: Node = self.push_queue.pop()
-            log_proto('picked pusher [%i]', pusher.port)
+            log_proto('picked pusher [%i]', pusher.nid)
 
             receivers: set[Node] = self._pick_nodes_group(pusher,
                                                           self.push_group)
             log_proto('picked receivers: [%s]',
-                      ', '.join(map(lambda receiver: str(receiver.port),
+                      ', '.join(map(lambda receiver: str(receiver.nid),
                                     receivers)))
 
-            pusher_t = pusher.xmit(MessageType.PUSH, receivers)
-            log_proto('triggerred pushing')
-
-            receivers_t = [ receiver.recv() for receiver in receivers ]
-            log_proto('triggerred receiving pushes')
-
-            pusher_t.join()
-            for receiver_t in receivers_t:
-                receiver_t.join()
+            for receiver in receivers:
+                pusher.xmit(receiver, MessageType.PUSH)
 
         # TODO: maybe restrict disseminated nodes from previous rounds from
         # sending again
@@ -140,28 +126,16 @@ class Gossip(DisseminationProtocol):
         log_proto('starting pull exchange...')
         while len(self.pull_queue) > 0:
             puller: Node = self.pull_queue.pop()
-            log_proto('picked puller [%i]', puller.port)
+            log_proto('picked puller [%i]', puller.nid)
 
             receivers: set[Node] = self._pick_nodes_group(puller,
                                                           self.pull_group)
             log_proto('picked receivers: [%s]',
-                      ', '.join(map(lambda receiver: str(receiver.port),
+                      ', '.join(map(lambda receiver: str(receiver.nid),
                                     receivers)))
 
-            puller_request_t = puller.xmit(MessageType.PULL, receivers)
-            log_proto('triggerred pull request')
-
-            receivers_t = [ receiver.recv() for receiver in receivers ]
-            log_proto('triggerred responding on pull request')
-
-            pullers_t = [ puller.recv() for _ in range(len(receivers)) ]
-            log_proto('triggerred receiving pull responses')
-
-            puller_request_t.join()
-            for receiver_t in receivers_t:
-                receiver_t.join()
-            for puller_t in pullers_t:
-                puller_t.join()
+            for receiver in receivers:
+                puller.xmit(receiver, MessageType.PULL)
 
         self.pull_queue = self.pool.disseminated_nodes(False)
 
