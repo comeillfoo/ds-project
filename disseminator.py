@@ -30,7 +30,7 @@ def count_logging_level(verbosity: int) -> int:
 @click.option('-l', '--limit', type=int, default=DEFAULT_ROUNDS_LIMIT,
               show_default=True, help='Maximum rounds of simulation')
 @click.option('-c', '--loss-chance', type=float, default=0.0,
-              show_default=True, help='Probability of losing a message')
+              show_default=True, help='probability% of losing a message')
 @click.option('-v', '--verbose', count=True, default=0,
               help='Set verbosity level, default INFO')
 @click.pass_context
@@ -48,7 +48,7 @@ def main(ctx, nodes: int, limit: int, loss_chance: float, verbose: int):
     ctx.ensure_object(dict)
     ctx.obj['nodes'] = nodes
     ctx.obj['limit'] = limit
-    ctx.obj['loss'] = loss_chance
+    ctx.obj['loss'] = loss_chance / 100
 
 
 def run(limit: int, proto: DisseminationProtocol):

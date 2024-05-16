@@ -1,0 +1,80 @@
+# Test #0: PROTO: gossip; LOSS: 75%; ARGS: pull 80
+## Sourcing local environment...
+## Starting test (args: --loss-chance 75 --nodes 100 gossip pull 80)...
+INFO:root:total: 16781 msgs, discarded: 12568 msgs
+INFO:root:expected: 0.750000, actual: 0.748942
+INFO:root:SUCCEED in dissemination: (3/500) rounds
+# ok: test finished successfully
+#####################################################################
+# Test #1: PROTO: gossip; LOSS: 75%; ARGS: pull 80
+## Sourcing local environment...
+## Starting test (args: --loss-chance 75 --nodes 100 gossip pull 80)...
+INFO:root:total: 16413 msgs, discarded: 12202 msgs
+INFO:root:expected: 0.750000, actual: 0.743435
+INFO:root:SUCCEED in dissemination: (3/500) rounds
+# ok: test finished successfully
+#####################################################################
+# Test #2: PROTO: gossip; LOSS: 75%; ARGS: pull 80
+## Sourcing local environment...
+## Starting test (args: --loss-chance 75 --nodes 100 gossip pull 80)...
+INFO:root:total: 15758 msgs, discarded: 11823 msgs
+INFO:root:expected: 0.750000, actual: 0.750286
+INFO:root:SUCCEED in dissemination: (3/500) rounds
+# ok: test finished successfully
+#####################################################################
+# Test #3: PROTO: gossip; LOSS: 75%; ARGS: pull 80
+## Sourcing local environment...
+## Starting test (args: --loss-chance 75 --nodes 100 gossip pull 80)...
+INFO:root:total: 13182 msgs, discarded: 9863 msgs
+INFO:root:expected: 0.750000, actual: 0.748217
+INFO:root:SUCCEED in dissemination: (3/500) rounds
+# ok: test finished successfully
+#####################################################################
+# Test #4: PROTO: gossip; LOSS: 75%; ARGS: pull 80
+## Sourcing local environment...
+## Starting test (args: --loss-chance 75 --nodes 100 gossip pull 80)...
+INFO:root:total: 15695 msgs, discarded: 11803 msgs
+INFO:root:expected: 0.750000, actual: 0.752023
+INFO:root:SUCCEED in dissemination: (3/500) rounds
+# ok: test finished successfully
+#####################################################################
+# Test #5: PROTO: gossip; LOSS: 75%; ARGS: pull 80
+## Sourcing local environment...
+## Starting test (args: --loss-chance 75 --nodes 100 gossip pull 80)...
+INFO:root:total: 12618 msgs, discarded: 9470 msgs
+INFO:root:expected: 0.750000, actual: 0.750515
+INFO:root:SUCCEED in dissemination: (3/500) rounds
+# ok: test finished successfully
+#####################################################################
+# Test #6: PROTO: gossip; LOSS: 75%; ARGS: pull 80
+## Sourcing local environment...
+## Starting test (args: --loss-chance 75 --nodes 100 gossip pull 80)...
+INFO:root:total: 14805 msgs, discarded: 10982 msgs
+INFO:root:expected: 0.750000, actual: 0.741776
+INFO:root:SUCCEED in dissemination: (3/500) rounds
+# ok: test finished successfully
+#####################################################################
+# Test #7: PROTO: gossip; LOSS: 75%; ARGS: pull 80
+## Sourcing local environment...
+## Starting test (args: --loss-chance 75 --nodes 100 gossip pull 80)...
+INFO:root:total: 13522 msgs, discarded: 10110 msgs
+INFO:root:expected: 0.750000, actual: 0.747670
+INFO:root:SUCCEED in dissemination: (3/500) rounds
+# ok: test finished successfully
+#####################################################################
+# Test #8: PROTO: gossip; LOSS: 75%; ARGS: pull 80
+## Sourcing local environment...
+## Starting test (args: --loss-chance 75 --nodes 100 gossip pull 80)...
+INFO:root:total: 12300 msgs, discarded: 9239 msgs
+INFO:root:expected: 0.750000, actual: 0.751138
+INFO:root:SUCCEED in dissemination: (2/500) rounds
+# ok: test finished successfully
+#####################################################################
+# Test #9: PROTO: gossip; LOSS: 75%; ARGS: pull 80
+## Sourcing local environment...
+## Starting test (args: --loss-chance 75 --nodes 100 gossip pull 80)...
+INFO:root:total: 16968 msgs, discarded: 12652 msgs
+INFO:root:expected: 0.750000, actual: 0.745639
+INFO:root:SUCCEED in dissemination: (3/500) rounds
+# ok: test finished successfully
+#####################################################################

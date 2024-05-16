@@ -4,13 +4,10 @@
 NODES=100
 
 # @brief default number of test repeats
-TEST_REPEATS=3
+TEST_REPEATS=10
 
 # @brief default logs directory
 LOGS='./logs'
-
-# @brief timeout
-TIMEOUT=60
 
 
 _join_by() {
@@ -21,13 +18,13 @@ _join_by() {
 }
 
 run_zero_loss_test() {
-    timeout --preserve-status $TIMEOUT ./run.sh -n $NODES $@
+    ./run.sh --nodes $NODES $@
 }
 
 run_test_with_loss() {
     local loss=$1
     shift 1
-    timeout --preserve-status $TIMEOUT ./run.sh --loss $loss -n $NODES $@
+    ./run.sh --loss-chance $loss --nodes $NODES $@
 }
 
 test_single() {
@@ -35,7 +32,7 @@ test_single() {
     shift 1
 
     local log_file
-    log_file="$(_join_by _ $@).log.${i}"
+    log_file="$(_join_by _ $@).log"
 
     local loss=$1;
     shift 1
@@ -48,13 +45,15 @@ test_single() {
         return 1
     fi
 
-    echo "# Test #${i}: PROTO: ${protocol}; LOSS: ${loss}%; ARGS: $@"
+    echo "# Test #${i}: PROTO: ${protocol}; LOSS: ${loss}%; ARGS: $@" \
+        |& tee -a "${log_file_path}"
     if [ $loss -ge 0 ]; then
-        run_test_with_loss $loss $protocol $@ |& tee "${log_file_path}"
+        run_test_with_loss $loss $protocol $@ |& tee -a "${log_file_path}"
     else
-        run_zero_loss_test $protocol $@ |& tee "${log_file_path}"
+        run_zero_loss_test $protocol $@ |& tee -a "${log_file_path}"
     fi
-    echo '#####################################################################'
+    echo '#####################################################################' \
+        |& tee -a "${log_file_path}"
 }
 
 
