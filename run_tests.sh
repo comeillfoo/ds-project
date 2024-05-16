@@ -76,8 +76,8 @@ test_all() {
         test_multiple $loss gossip pull $group_size
     done
 
-    for ((push_gsz = 10; push_gsz < 100; push_gsz += 30)); do
-        for ((pull_gsz = 10; pull_gsz < 100; pull_gsz += 30)); do
+    for ((push_gsz = 5; push_gsz < 100; push_gsz += 25)); do
+        for ((pull_gsz = 5; pull_gsz < 100; pull_gsz += 25)); do
             test_multiple $loss gossip push-pull $push_gsz $pull_gsz
         done
     done
