@@ -20,7 +20,10 @@ RESULT_RX=re.compile(r'INFO:root:SUCCEED in dissemination: \((\d+)/\d+\) rounds'
 def argparser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser('plotter')
 
-    p.add_argument('logs', type=Path, help='Path to folder with logs')
+    p.add_argument('logs', type=Path, nargs='+',
+                   help='Path to logs')
+    p.add_argument('-s', '--summary', action='store_true',
+                   help='Plot summary diagram')
     return p
 
 
@@ -64,15 +67,28 @@ def compile_logs(acc: dict, logs: dict) -> dict:
     return acc
 
 
+GLOBAL_FIG, GLOBAL_AX = plt.subplots(1, figsize=(20, 10))
+
+
+def figax(summary: bool) -> Tuple:
+    if not summary:
+        return plt.subplots(1, figsize=(10, 5))
+    return GLOBAL_FIG, GLOBAL_AX
+
+
 def main() -> int:
     args = argparser().parse_args()
-    readlink = lambda logfile: os.path.join(args.logs, logfile)
-    logs = reduce(compile_logs,
-                  map(parse_log,
-                      map(readlink, filter(is_logfile, os.listdir(args.logs)))), {})
+    logs = {}
+    if args.summary:
+        logs.update(reduce(compile_logs, map(parse_log, args.logs), {}))
+    else:
+        for logfolder in args.logs:
+            readlink = lambda logfile: os.path.join(logfolder, logfile)
+            logs.update(reduce(compile_logs, map(parse_log,
+                    map(readlink, filter(is_logfile, os.listdir(logfolder)))), {}))
 
     for testcase, results in logs.items():
-        fig, ax = plt.subplots(1, figsize=(10, 5))
+        fig, ax = figax(args.summary)
         n = len(results)
         ax.set_xticks(range(0, 100, 5))
         y_avg = [0.0] * len(results[0])
@@ -84,21 +100,31 @@ def main() -> int:
 
             y = list(map(lambda r: r[1], result))
             y_avg = [ y_acc + y_curr for y_acc, y_curr in zip(y_avg, y) ]
-
-            ax.plot(x, y, '--', label=str(i))
+            if not args.summary:
+                ax.plot(x, y, '--', label=str(i))
 
         y_avg = list(map(lambda v: v / n, y_avg))
-        ax.plot(x_avg, y_avg, 'o-', label='average')
+        if args.summary:
+            ax.plot(x_avg, y_avg, 'o-', label=testcase)
+        else:
+            ax.plot(x_avg, y_avg, 'o-', label='average')
+
         for x, y in zip(x_avg, y_avg):
             ax.text(x, y * 1.05, '%.2f' % y, ha='center')
 
-        plt.title(f'Dissemination for {testcase}')
+        if args.summary:
+            plt.title('Dissemination')
+        else:
+            plt.title(f'Dissemination for {testcase}')
         plt.xlabel('Chance to loss message, %')
         plt.ylabel('Time to disseminate, rounds #')
         plt.grid(True)
         ax.legend()
-        fig.savefig(f'{testcase}.png')
+        if not args.summary:
+            fig.savefig(f'{testcase}.png')
 
+    if args.summary:
+        GLOBAL_FIG.savefig('summary.png')
 
 
 if __name__ == '__main__':
